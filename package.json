@@ -1,7 +1,7 @@
 {
-  "name": "08tut",
+  "name": "09tut",
   "version": "1.0.0",
-  "description": "Routing and Express Tutorial",
+  "description": "MVC in Express Tutorial",
   "main": "index.js",
   "scripts": {
     "start": "node server",

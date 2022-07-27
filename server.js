@@ -2,34 +2,13 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const cors = require("cors");
+const corsOptions = require("./config/corsOptions");
 const { logEvents, logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
 const PORT = process.env.PORT || 3500;
 
 //CUSTOM MIDDLEWARE LOGGER
 app.use(logger);
-
-//Third party middleware
-//CROSS ORIGIN RESOURCE SHARING
-const whitelist = [
-  "https://www.yoursite.com",
-  "http://127.0.0.1:5500",
-  "http://localhost:3500",
-  "https://google.com/",
-];
-
-const corsOptions = {
-  //the following checks if the origin is part of the whitelist.
-  //NOTE || !origin below avoids blocking REST tools or server to server requests and should be used majorly in development.
-  origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  optionsSuccessStatus: 200,
-};
 
 app.use(cors(corsOptions));
 
@@ -41,11 +20,9 @@ app.use(express.json());
 
 //built in middleware to read static files
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "public")));
 
 //routes
 app.use("/", require("./routes/root"));
-app.use("/subdir", require("./routes/subdir"));
 app.use("/employees", require("./routes/api/employees"));
 
 app.all("*", (req, res) => {
