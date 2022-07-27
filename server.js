@@ -41,55 +41,13 @@ app.use(express.json());
 
 //built in middleware to read static files
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
-app.get("^/$|/index(.html)?", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "index.html"));
-  // res.sendFile("./views/index.html", { root: __dirname });
-});
-app.get("/new-page(.html)?", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "new-page.html"));
-});
-app.get("/new-page(.html)?", (req, res) => {
-  res.sendFile(path.join(__dirname, "views", "new-page.html"));
-});
+//routes
+app.use("/", require("./routes/root"));
+app.use("/subdir", require("./routes/subdir"));
+app.use("/employees", require("./routes/api/employees"));
 
-app.get("/old-page(.html)?", (req, res) => {
-  res.redirect(301, "/new-page.html"); //We do not need to define a path to the new-page because its been defined above and we only nee to redirect to it
-});
-
-// ROUTE HANDLERS
-//This is an illustration on how to chain requests and responses
-app.get(
-  "/hello(.html)?",
-  (req, res, next) => {
-    console.log("about to load hello.html");
-    next();
-  },
-  (req, res) => {
-    res.send("Hello world!");
-  }
-);
-const one = (req, res, next) => {
-  console.log("one");
-  next();
-};
-const two = (req, res, next) => {
-  console.log("two");
-  next();
-};
-const three = (req, res, next) => {
-  console.log("three");
-  res.send("Finished");
-};
-
-app.get("/chain(.html)?", [one, two, three]);
-
-//catch all routes
-//BEFORE THIS WAS THE CATCH ALL ROUTE
-// app.get("/*", (req, res) => {
-//   res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-// });
-//CATCH ALL ROUTE MODIFIED TO app.all no more app.get
 app.all("*", (req, res) => {
   res.status(404);
   if (req.accepts("html")) {

@@ -1,7 +1,7 @@
 {
-  "name": "06tut",
+  "name": "08tut",
   "version": "1.0.0",
-  "description": "Express Tutorial",
+  "description": "Routing and Express Tutorial",
   "main": "index.js",
   "scripts": {
     "start": "node server",
