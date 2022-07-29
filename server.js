@@ -5,10 +5,16 @@ const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const { logEvents, logger } = require("./middleware/logEvents");
 const errorHandler = require("./middleware/errorHandler");
+const verifyJWT = require("./middleware/verifyJWT");
+const cookieParser = require("cookie-parser");
+const credentials = require("./middleware/credentials");
 const PORT = process.env.PORT || 3500;
 
 //CUSTOM MIDDLEWARE LOGGER
 app.use(logger);
+
+//this handles credentials check before CORS
+app.use(credentials);
 
 app.use(cors(corsOptions));
 
@@ -18,12 +24,20 @@ app.use(express.urlencoded({ extended: false }));
 //built in middleware to read json files
 app.use(express.json());
 
-//built in middleware to read static files
+//third-party middleware for cookies. Note the cookie parser will help to parse refreshtoken in http-only cookies
+app.use(cookieParser());
+
+//built in middleware to serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
 //routes
 app.use("/", require("./routes/root"));
-app.use("/employees", require("./routes/api/employees"));
+app.use("/register", require("./routes/api/register"));
+app.use("/auth", require("./routes/api/auth"));
+app.use("/refresh", require("./routes/api/refresh"));
+app.use("/logout", require("./routes/api/logout"));
+
+app.use("/employees", verifyJWT, require("./routes/api/employees"));
 
 app.all("*", (req, res) => {
   res.status(404);
